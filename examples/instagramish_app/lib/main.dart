@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'dot_indicator.dart';
+import 'fixed_size_scroll_dot_indicator.dart';
 
 void main() {
   runApp(MyApp());
@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           const SizedBox(height: 6),
-          FixedScrollIndicator(
+          FixedSizeScrollDotIndicator(
             length: colors.length,
             currentIndex: _currentIndex,
           ),

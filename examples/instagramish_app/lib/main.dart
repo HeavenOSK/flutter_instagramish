@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           const SizedBox(height: 6),
-          InstagramishDotIndicator(
+          FixedScrollIndicator(
             length: colors.length,
             currentIndex: _currentIndex,
           ),

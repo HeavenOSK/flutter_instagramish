@@ -1,6 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'fixed_size_scroll_dot_indicator.dart';
+import 'package:instagramish/instagramish.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,9 +14,6 @@ const colors = [
   Colors.purpleAccent,
   Colors.blue,
   Colors.green,
-  Colors.red,
-  Colors.amber,
-  Colors.purpleAccent,
 ];
 
 class MyApp extends StatelessWidget {
@@ -48,11 +45,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      appBar: CupertinoNavigationBar(
+        middle: Text('Instagramish Something'),
       ),
       body: Column(
         children: [
+          const SizedBox(height: 28),
           AspectRatio(
             aspectRatio: 1,
             child: PageView(
@@ -66,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           const SizedBox(height: 6),
-          FixedSizeScrollDotIndicator(
+          WheelDotsIndicator(
             length: colors.length,
             currentIndex: _currentIndex,
           ),

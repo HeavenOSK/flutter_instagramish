@@ -37,8 +37,8 @@ const maxCount = 7;
 
 // TODO(HeavenOSK): length が 0, 1, 2, の時を考慮する。
 // TODO(HeavenOSK): 中途で length が変更された時を考慮する。
-class FixedSizeScrollDotIndicator extends StatefulWidget {
-  const FixedSizeScrollDotIndicator({
+class WheelDotsIndicator extends StatefulWidget {
+  const WheelDotsIndicator({
     @required this.length,
     this.currentIndex,
     this.activeColor = const Color.fromRGBO(8, 148, 244, 1),
@@ -52,12 +52,10 @@ class FixedSizeScrollDotIndicator extends StatefulWidget {
   final int currentIndex;
 
   @override
-  _FixedSizeScrollDotIndicatorState createState() =>
-      _FixedSizeScrollDotIndicatorState();
+  _WheelDotsIndicatorState createState() => _WheelDotsIndicatorState();
 }
 
-class _FixedSizeScrollDotIndicatorState
-    extends State<FixedSizeScrollDotIndicator> {
+class _WheelDotsIndicatorState extends State<WheelDotsIndicator> {
   int _centerIndex = 1;
 
   @override
@@ -66,7 +64,7 @@ class _FixedSizeScrollDotIndicatorState
   }
 
   @override
-  void didUpdateWidget(FixedSizeScrollDotIndicator oldWidget) {
+  void didUpdateWidget(WheelDotsIndicator oldWidget) {
     final distanceFromCenter = (_centerIndex - widget.currentIndex).abs();
     final shouldUpdateCenter = distanceFromCenter > 1;
     if (shouldUpdateCenter) {
@@ -92,7 +90,6 @@ class _FixedSizeScrollDotIndicatorState
                 final visible = absDistance <= 3;
 
                 if (visible) {
-                  final size = sizeFromAbsoluteDistance(absDistance);
                   return Align(
                     key: ValueKey(index),
                     alignment: Alignment.centerLeft,
@@ -101,9 +98,9 @@ class _FixedSizeScrollDotIndicatorState
                         left: center - paddingFromDistance(distance),
                       ),
                       duration: const Duration(milliseconds: 320),
-                      curve: Curves.easeOutCubic,
-                      height: size,
-                      width: size,
+                      curve: Curves.easeOutQuad,
+                      height: sizeFromAbsoluteDistance(absDistance),
+                      width: sizeFromAbsoluteDistance(absDistance),
                       child: Container(
                         decoration: BoxDecoration(
                           color: index == widget.currentIndex
@@ -114,8 +111,9 @@ class _FixedSizeScrollDotIndicatorState
                       ),
                     ),
                   );
+                } else {
+                  return const SizedBox.shrink();
                 }
-                return const SizedBox.shrink();
               },
             ),
           );

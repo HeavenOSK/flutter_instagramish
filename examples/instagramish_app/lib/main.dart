@@ -65,8 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           const SizedBox(height: 6),
           WheelDotsIndicator(
-            length: colors.length,
-            currentIndex: _currentIndex,
+            itemCount: colors.length,
+            currentIndex: 3,
           ),
         ],
       ),

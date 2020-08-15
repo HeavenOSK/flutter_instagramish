@@ -1,127 +1,163 @@
 import 'package:flutter/material.dart';
 
-const double _maxSize = 6;
-
-double sizeFromAbsoluteDistance(double distance) {
-  if (distance <= 1) {
-    return _maxSize;
-  } else if (distance <= 2) {
-    return 4;
-  } else {
-    return 2;
-  }
-}
-
+const _dotSize = 6.0;
 const _defaultActiveColor = Color.fromRGBO(8, 148, 244, 1);
 const _defaultInactiveColor = const Color.fromRGBO(219, 219, 219, 1);
+const _defaultDuration = Duration(milliseconds: 320);
+const _defaultAnimationCurve = Curves.easeOutQuad;
 
-// TODO(HeavenOSK): length が 0, 1, 2, の時を考慮する。
-// TODO(HeavenOSK): 中途で length が変更された時を考慮する。
+/// An dots indicator that notify current index to user with wheel
+/// animation.
 class WheelDotsIndicator extends StatefulWidget {
   const WheelDotsIndicator({
     @required this.itemCount,
-    @required this.currentIndex,
+    @required this.indexController,
     this.activeColor = _defaultActiveColor,
     this.inactiveColor = _defaultInactiveColor,
-    this.dotAnimationCurve = Curves.easeOutQuad,
+    this.animationCurve = _defaultAnimationCurve,
+    this.duration = _defaultDuration,
     Key key,
   })  : assert(itemCount != null && itemCount >= 0),
-        assert(currentIndex != null && currentIndex < itemCount),
-        assert(dotAnimationCurve != null),
+        assert(indexController != null),
         assert(inactiveColor != null),
         assert(activeColor != null),
+        assert(animationCurve != null),
+        assert(duration != null),
         super(key: key);
 
+  /// A count of all item.
   final int itemCount;
+
+  /// An active color of dot.
   final Color activeColor;
+
+  /// An inactive color of dot.
   final Color inactiveColor;
-  final int currentIndex;
-  final Curve dotAnimationCurve;
+
+  /// A curve of animation.
+  final Curve animationCurve;
+
+  /// A duration for animation.
+  final Duration duration;
+
+  /// A controller to control [WheelDotsIndicator].
+  final ValueNotifier<int> indexController;
 
   @override
   _WheelDotsIndicatorState createState() => _WheelDotsIndicatorState();
 }
 
 class _WheelDotsIndicatorState extends State<WheelDotsIndicator> {
-  double _centerIndex = 1.0;
+  double _centerIndex;
   int _currentIndex;
+  int _itemCount;
 
   @override
   void initState() {
-    _currentIndex = widget.currentIndex;
-    _adjustCenter();
+    _itemCount = widget.itemCount;
+    _currentIndex = widget.indexController.value;
+    _centerIndex = _getInitialCenter(widget.itemCount, _currentIndex);
     super.initState();
   }
 
-  void _adjustCenter() {
-    if (widget.itemCount >= 3) {
-      _centerIndex = 1;
-    } else if (widget.itemCount == 2) {
-      _centerIndex = 0.5;
+  void _update() {
+    _centerIndex = _getNewCenter(
+      _centerIndex,
+      _currentIndex,
+      widget.indexController.value,
+    );
+    _currentIndex = widget.indexController.value;
+  }
+
+  double _getInitialCenter(
+    int itemCount,
+    int currentIndex,
+  ) {
+    if (itemCount <= 1) {
+      return 0;
+    } else if (itemCount <= 2) {
+      return 0.5;
     } else {
-      _centerIndex = 0;
+      return (currentIndex + 1).toDouble();
     }
-    super.initState();
   }
 
-  @override
-  void didUpdateWidget(WheelDotsIndicator oldWidget) {
-    _currentIndex = widget.currentIndex;
-    final distanceFromCenter = (_centerIndex - widget.currentIndex).abs();
+  double _getNewCenter(
+    double centerIndex,
+    int oldCurrentIndex,
+    newCurrentIndex,
+  ) {
+    final distanceFromCenter = (centerIndex - newCurrentIndex).abs();
     final shouldUpdateCenter = distanceFromCenter > 1;
     if (shouldUpdateCenter) {
-      final diff = widget.currentIndex - oldWidget.currentIndex;
-      _centerIndex += diff;
+      final diff = newCurrentIndex - oldCurrentIndex;
+      return centerIndex + diff;
+    } else {
+      return centerIndex;
     }
-    if (oldWidget.itemCount != widget.itemCount) {
-      _adjustCenter();
+  }
+
+  double _sizeFromDistance(double largestDotSize, double distance) {
+    if (distance <= 1) {
+      return largestDotSize;
+    } else if (distance <= 2) {
+      return largestDotSize * 2 / 3;
+    } else {
+      return largestDotSize / 3;
     }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: _maxSize,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final center = constraints.maxWidth / 2;
-          return Stack(
-            children: List.generate(
-              widget.itemCount,
-              (index) {
-                final distance = _centerIndex - index;
-                final absDistance = distance.abs();
-                final visible = absDistance <= 3;
+    return AnimatedBuilder(
+      animation: widget.indexController,
+      builder: (context, child) {
+        _update();
+        return SizedBox(
+          height: _dotSize,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final center = constraints.maxWidth / 2;
+              return Stack(
+                children: List.generate(
+                  _itemCount,
+                  (index) {
+                    final distance = _centerIndex - index;
+                    final absDistance = distance.abs();
+                    final visible = absDistance <= 3;
 
-                if (visible) {
-                  return Align(
-                    key: ValueKey(index),
-                    alignment: Alignment.centerLeft,
-                    child: AnimatedContainer(
-                      margin: EdgeInsets.only(left: center - distance * 10),
-                      duration: const Duration(milliseconds: 320),
-                      curve: widget.dotAnimationCurve,
-                      height: sizeFromAbsoluteDistance(absDistance),
-                      width: sizeFromAbsoluteDistance(absDistance),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: index == widget.currentIndex
-                              ? widget.activeColor
-                              : widget.inactiveColor,
-                          borderRadius: BorderRadius.circular(4),
+                    if (visible) {
+                      return Align(
+                        key: ValueKey(index),
+                        alignment: Alignment.centerLeft,
+                        child: AnimatedContainer(
+                          margin: EdgeInsets.only(
+                            left: center - distance * _dotSize * 1.6,
+                          ),
+                          duration: widget.duration,
+                          curve: widget.animationCurve,
+                          height: _sizeFromDistance(_dotSize, absDistance),
+                          width: _sizeFromDistance(_dotSize, absDistance),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: index == _currentIndex
+                                  ? widget.activeColor
+                                  : widget.inactiveColor,
+                              borderRadius: BorderRadius.circular(_dotSize),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                } else {
-                  return const SizedBox.shrink();
-                }
-              },
-            ),
-          );
-        },
-      ),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

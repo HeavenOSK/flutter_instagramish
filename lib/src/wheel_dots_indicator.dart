@@ -111,7 +111,7 @@ class _WheelDotsIndicatorState extends State<WheelDotsIndicator> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.indexController,
-      builder: (context, child) {
+      builder: (context, _) {
         _update();
         return SizedBox(
           height: _dotSize,

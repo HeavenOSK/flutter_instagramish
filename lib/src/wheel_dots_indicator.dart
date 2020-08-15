@@ -97,7 +97,7 @@ class _WheelDotsIndicatorState extends State<WheelDotsIndicator> {
     }
   }
 
-  double _sizeFromDistance(double largestDotSize, double distance) {
+  double _getSizeFromDistance(double largestDotSize, double distance) {
     if (distance <= 1) {
       return largestDotSize;
     } else if (distance <= 2) {
@@ -136,8 +136,8 @@ class _WheelDotsIndicatorState extends State<WheelDotsIndicator> {
                           ),
                           duration: widget.duration,
                           curve: widget.animationCurve,
-                          height: _sizeFromDistance(_dotSize, absDistance),
-                          width: _sizeFromDistance(_dotSize, absDistance),
+                          height: _getSizeFromDistance(_dotSize, absDistance),
+                          width: _getSizeFromDistance(_dotSize, absDistance),
                           child: Container(
                             decoration: BoxDecoration(
                               color: index == _currentIndex

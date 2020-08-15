@@ -85,7 +85,7 @@ class _WheelDotsIndicatorState extends State<WheelDotsIndicator> {
   double _getNewCenter(
     double centerIndex,
     int oldCurrentIndex,
-    newCurrentIndex,
+    int newCurrentIndex,
   ) {
     final distanceFromCenter = (centerIndex - newCurrentIndex).abs();
     final shouldUpdateCenter = distanceFromCenter > 1;

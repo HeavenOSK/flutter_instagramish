@@ -1,7 +1,6 @@
 name: instagramish
 description: A ui library for composing instagramish app.
 version: 0.1.0
-author: Ryunosuke Watanabe
 homepage: https://github.com/HeavenOSK/flutter_instagramish
 environment:
   sdk: ">=2.7.0 <3.0.0"

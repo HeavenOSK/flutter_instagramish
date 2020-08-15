@@ -1,4 +1,4 @@
-# instagramish_app
+# example
 
 A new Flutter application.
 

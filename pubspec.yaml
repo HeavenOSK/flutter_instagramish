@@ -1,5 +1,5 @@
 name: instagramish
-description: A ui library for composing instagramish app.
+description: A library that includes instagramish ui components.
 version: 0.1.0
 homepage: https://github.com/HeavenOSK/flutter_instagramish
 environment:
